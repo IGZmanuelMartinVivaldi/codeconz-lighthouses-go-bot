@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+option go_package = "github.com/jonasdacruz/lighthouses_aicontest/coms";
+
+message NewPlayer {
+	string name = 1;
+	string serverAddress = 2;
+}
+
+/*
+			"player_num": 0,
+			"player_count": 2,
+			"position": [1, 2],
+			"map": [
+				[0, 0, 0, 0, 0],
+				[0, 1, 1, 1, 0],
+				[0, 1, 1, 0, 0],
+				[0, 1, 1, 0, 0],
+				[0, 0, 0, 0, 0]],
+			"lighthouses": [
+				{
+					"position": [1, 1],
+				}
+			]
+		}
+*/
+
+
+message MapRow {
+	repeated int32 Row = 1;
+}
+
+message Position {
+	int32 X = 1;
+	int32 Y = 2;
+}
+
+message Lighthouse {
+	Position Position = 1;
+	int32 Owner = 2;
+	int32 Energy = 3;
+	repeated Position Connections = 4;
+	bool HaveKey = 5;
+}
+
+message PlayerID {
+	int32 PlayerID = 1;
+}
+
+message NewPlayerInitialState {
+    int32 PlayerID = 1;
+    int32 PlayerCount = 2;
+    Position Position = 3;
+    repeated MapRow Map = 4;
+    repeated Lighthouse Lighthouses = 5;
+}
+
+/*
+	{
+		"position": [1, 3],
+		"score": 36,
+		"energy": 66,
+		"view": [
+			[-1,-1,-1, 0,-1,-1,-1],
+			[-1, 0, 0,50,23,50,-1],
+			[-1, 0, 0,32,41, 0,-1],
+			[ 0, 0, 0, 0,50, 0, 0],
+			[-1, 0, 0, 0, 0, 0,-1],
+			[-1, 0, 0, 0, 0, 0,-1],
+			[-1,-1,-1, 0,-1,-1,-1]
+		],
+		"lighthouses": [
+			{
+				"position": [1, 1],
+				"owner": 0,
+				"energy": 30,
+				"connections": [[1, 3]],
+				"have_key": false
+			},
+			{
+				"position": [3, 1],
+				"owner": -1,
+				"energy": 0,
+				"connections": [],
+				"have_key": false
+			},
+			{
+				"position": [2, 3],
+				"owner": 1,
+				"energy": 90,
+				"connections": [],
+				"have_key": false
+			},
+			{
+				"position": [1, 3],
+				"owner": 0,
+				"energy": 50,
+				"connections": [[1, 1]],
+				"have_key": true
+			}
+		]
+	}
+*/
+
+message NewTurn {
+	Position Position = 1;
+	int32 Score = 2;
+	int32 Energy = 3;
+	repeated MapRow View = 4;
+	repeated Lighthouse Lighthouses = 5;
+}
+
+enum Action {
+    PASS = 0;
+    MOVE = 1;
+    ATTACK = 2;
+		CONNECT = 3;
+}
+
+message NewAction {
+	Action Action = 1;
+	Position Destination = 2;
+	int32 Energy	= 3;
+}
+
+message PlayerReady {
+	bool Ready = 1;
+}
+
+service GameService {
+	rpc Join (NewPlayer) returns (PlayerID) {}
+	rpc InitialState (NewPlayerInitialState) returns (PlayerReady) {}
+	rpc Turn (NewTurn) returns (NewAction) {}
+}
