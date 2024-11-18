@@ -1,3 +1,5 @@
+Test
+
 # codeconz-lighthouses-go-bot
 
 This is a Go bot that can be used to play the game of Lighthouses on the CodeConz platform.
